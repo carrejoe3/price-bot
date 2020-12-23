@@ -31,7 +31,7 @@ const KYBER_RATE_ABI = ABIs.kyber
 const KYBER_RATE_ADDRESS = '0x96b610046d63638d970e6243151311d8827d69a5'
 const kyberRateContract = new web3.eth.Contract(KYBER_RATE_ABI, KYBER_RATE_ADDRESS)
 
-async function checkPair(args) {
+async function checkPair (args) {
   const { inputTokenSymbol, inputTokenAddress, outputTokenSymbol, outputTokenAddress, inputAmount } = args
 
   const exchangeAddress = await uniswapFactoryContract.methods.getExchange(outputTokenAddress).call()
@@ -49,6 +49,11 @@ async function checkPair(args) {
     'Kyber Min Return': web3.utils.fromWei(kyberResult.slippageRate, 'Ether'),
     'Timestamp': moment().tz('America/Chicago').format(),
   }])
+
+  return {
+    uniswapPrice: web3.utils.fromWei(uniswapResult, 'Ether'),
+    kyberPrice: web3.utils.fromWei(kyberResult.slippageRate, 'Ether')
+  }
 }
 
 let priceMonitor
@@ -66,7 +71,7 @@ async function monitorPrice() {
 
     // ADD YOUR CUSTOM TOKEN PAIRS HERE!!!
 
-    await checkPair({
+    const results = await checkPair({
       inputTokenSymbol: 'ETH',
       inputTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       outputTokenSymbol: 'MKR',
@@ -74,29 +79,7 @@ async function monitorPrice() {
       inputAmount: web3.utils.toWei('1', 'ETHER')
     })
 
-    await checkPair({
-      inputTokenSymbol: 'ETH',
-      inputTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-      outputTokenSymbol: 'DAI',
-      outputTokenAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
-      inputAmount: web3.utils.toWei('1', 'ETHER')
-    })
-
-    await checkPair({
-      inputTokenSymbol: 'ETH',
-      inputTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-      outputTokenSymbol: 'KNC',
-      outputTokenAddress: '0xdd974d5c2e2928dea5f71b9825b8b646686bd200',
-      inputAmount: web3.utils.toWei('1', 'ETHER')
-    })
-
-    await checkPair({
-      inputTokenSymbol: 'ETH',
-      inputTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-      outputTokenSymbol: 'LINK',
-      outputTokenAddress: '0x514910771af9ca656af840dff83e8264ecf986ca',
-      inputAmount: web3.utils.toWei('1', 'ETHER')
-    })
+    compareResults(results)
 
   } catch (error) {
     console.error(error)
@@ -106,6 +89,10 @@ async function monitorPrice() {
   }
 
   monitoringPrice = false
+}
+
+compareResults = (results) => {
+  console.log
 }
 
 // Check markets every n seconds
