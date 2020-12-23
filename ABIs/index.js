@@ -3,4 +3,3 @@ const uniswap = require('./uniswap')
 
 exports.kyber = kyber.abi
 exports.uniswapFactory = uniswap.factory
-exports.uniswapExchange = uniswap.exchange
